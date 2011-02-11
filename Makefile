@@ -1,7 +1,7 @@
 CC = gcc
 
 .c.o:
-	$(CC) -c $<
+	$(CC) -g -c $<
 .PHONY : all
 all: todo
 todo: main.o

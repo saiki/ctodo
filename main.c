@@ -22,45 +22,7 @@ typedef struct {
 	int nice;
 } Params;
 
-int add(char *);
-void delete(int);
-int list(char *);
-void nice(int, int);
-void usage(char **);
-void sort();
-char *get_path();
-
-Params *parse(int, char **);
 char *path = "";
-
-int main(int argc, char *argv[]) {
-
-	Params *params = parse(argc, argv);
-	switch (params->command) {
-		case ADD:
-			add(params->value);
-			break;
-		case DELETE:
-			delete(params->priority);
-			break;
-		case LIST:
-			list(params->value);
-			break;
-		case NICE:
-			nice(params->priority, params->nice);
-			break;
-		case USAGE:
-			usage(argv);
-			exit(1);
-			break;
-		default:
-			usage(argv);
-			exit(1);
-			break;
-	}
-
-	return 0;
-}
 
 char *get_path() {
 	if (strlen(path) <= 0) {
@@ -69,39 +31,45 @@ char *get_path() {
 	return path;
 }
 
-int add(char *value) {
+int add(char const *value) {
 	FILE *fp;
 	fp = fopen(get_path(), "a+");
 	if (fp == NULL) {
 		printf("%s can not open.", get_path());
 		return -1;
 	}
-
 	int priority = 0;
 	int current = 0;
-	int c;
-	char *line = (char *)malloc(sizeof(char));
+	char *c = (char *)malloc(sizeof(char));
+	char *line = (char *)malloc(sizeof(char) * 10);
+	char *tmp_line = (char *)malloc(sizeof(char) * 10);
 	fseek(fp, 0, SEEK_SET);
-	while ((c = fgetc(fp)) != EOF) {
-		printf("%d\n", c);
-		//if (c == '\n' || c == '\r') {
-		if (c != '\n' && c != '\r') {
-			line = strcat(line, (char *)&c);
+	while ((*c = fgetc(fp)) != EOF) {
+		if (*c != '\n' && *c != '\r') {
+			free(tmp_line);
+			tmp_line = (char *)malloc(sizeof(char) * (strlen(line) + 1));
+			if (strlen(line) > 0) {
+				tmp_line = strcpy(tmp_line, line);
+			}
+			tmp_line = strcat(tmp_line, c);
+			free(line);
+			line = (char *)malloc(sizeof(char) * (strlen(line) + 1));
+			line = strcpy(line, tmp_line);
+			printf("%s\n", line);
 			continue;
 		}
 		// if crlf skip
 		if (strlen(line) > 0) {
 			printf("%s\n", line);
 			if (sscanf(line, "%d\t%*s", &current) == 1) {
-				printf("current = %d_____93\n", current);
 				priority = (priority > current) ? priority : current;
 			}
 			line = strcpy(line, "");
 		}
-		printf("priority = %d_____95\n", priority);
 	}
 	fprintf(fp, "%d\t%s\n", (priority + 1), value);
 	free(line);
+	free(tmp_line);
 	fclose(fp);
 	return priority + 1;
 }
@@ -139,20 +107,31 @@ void sort() {
 	fclose(fp);
 }
 
-void usage(char **argv) { // {{{
+void usage(char **argv) {
 	int i = 0;
 	printf("unknown command:%s and values...\n", *(argv+1));
 	for (i = 1; *(argv+i) != '\0'; i++) {
 		printf("%s\n", *(argv+i));
 	}
-} // }}}
+}
 
-Params *parse(int argc, char **argv) { // {{{
-
+Params *parse(int argc, char **argv) {
 	Params *params = (Params *)malloc(sizeof(Params));
+	int i = 0;
+	if (argc <= 1) {
+		printf("list");
+		params->command = LIST;
+		return params;
+	}
 	if (strcmp(*(argv+1), "add") == 0) {
 		params->command = ADD;
-		params->value = *(argv+2);
+		params->value = (char *)malloc(sizeof(char));
+		for (i = 2; i < argc; i++) {
+			if (strlen(params->value) > 0) {
+				strcat(params->value, " ");
+			}
+			strcat(params->value, *(argv+i));
+		}
 	} else if (strcmp(*(argv+1), "update") == 0) {
 		params->command = UPDATE;
 		params->value = *(argv+2);
@@ -171,5 +150,39 @@ Params *parse(int argc, char **argv) { // {{{
 		params->command = USAGE;
 	}
 	return params;
-} // }}}
+}
+
+int main(int argc, char *argv[]) {
+
+	Params *params = parse(argc, argv);
+	switch (params->command) {
+		case ADD:
+			if ((params->priority = add(params->value)) != -1) {
+				printf("add priority %d\n", params->priority);
+			} else {
+				printf("error \"%s\" can not add.", params->value);
+			}
+			break;
+		case DELETE:
+			delete(params->priority);
+			break;
+		case LIST:
+			list(params->value);
+			break;
+		case NICE:
+			nice(params->priority, params->nice);
+			break;
+		case USAGE:
+			usage(argv);
+			exit(1);
+			break;
+		default:
+			usage(argv);
+			exit(1);
+			break;
+	}
+	free(params->value);
+	free(params);
+	return 0;
+}
 
