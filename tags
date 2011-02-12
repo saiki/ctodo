@@ -4,26 +4,25 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-ADD	main.c	/^	ADD, $/;"	e	enum:COMMAND	file:
+ADD	todo.h	/^	ADD, $/;"	e	enum:COMMAND
 CC	Makefile	/^CC = gcc$/;"	m
-COMMAND	main.c	/^enum COMMAND {$/;"	g	file:
-DELETE	main.c	/^	DELETE,$/;"	e	enum:COMMAND	file:
-LIST	main.c	/^	LIST,$/;"	e	enum:COMMAND	file:
-NICE	main.c	/^	NICE,$/;"	e	enum:COMMAND	file:
-Params	main.c	/^} Params;$/;"	t	typeref:struct:__anon1	file:
-UPDATE	main.c	/^	UPDATE, $/;"	e	enum:COMMAND	file:
-USAGE	main.c	/^	USAGE$/;"	e	enum:COMMAND	file:
-add	main.c	/^int add(char *value) {$/;"	f
-command	main.c	/^	enum COMMAND command;$/;"	m	struct:__anon1	typeref:enum:__anon1::COMMAND	file:
-delete	main.c	/^void delete(int priority) {$/;"	f
-get_path	main.c	/^char *get_path() {$/;"	f
-list	main.c	/^void list(char *value) {$/;"	f
+COMMAND	todo.h	/^enum COMMAND {$/;"	g
+DELETE	todo.h	/^	DELETE,$/;"	e	enum:COMMAND
+LIST	todo.h	/^	LIST,$/;"	e	enum:COMMAND
+NICE	todo.h	/^	NICE,$/;"	e	enum:COMMAND
+Params	todo.h	/^} Params;$/;"	t	typeref:struct:__anon1
+UPDATE	todo.h	/^	UPDATE, $/;"	e	enum:COMMAND
+USAGE	todo.h	/^	USAGE$/;"	e	enum:COMMAND
+add	todo.c	/^int add(char const *value) {$/;"	f
+command	todo.h	/^	enum COMMAND command;$/;"	m	struct:__anon1	typeref:enum:__anon1::COMMAND
+delete	todo.c	/^void delete(int priority) {$/;"	f
+get_path	todo.c	/^char *get_path() {$/;"	f
+list	todo.c	/^int list(char *value) {$/;"	f
 main	main.c	/^int main(int argc, char *argv[]) {$/;"	f
-nice	main.c	/^	int nice;$/;"	m	struct:__anon1	file:
-nice	main.c	/^void nice(int priority, int nice) {$/;"	f
-parse	main.c	/^Params *parse(int argc, char **argv) {$/;"	f
-path	main.c	/^char *path = "";$/;"	v
-priority	main.c	/^	int priority;$/;"	m	struct:__anon1	file:
-update	main.c	/^void update(int priority, char *value) {$/;"	f
-usage	main.c	/^void usage(char **argv) {$/;"	f
-value	main.c	/^	char *value;$/;"	m	struct:__anon1	file:
+nice	todo.c	/^void nice(int priority, int nice) {$/;"	f
+nice	todo.h	/^	int nice;$/;"	m	struct:__anon1
+parse	todo.c	/^Params *parse(int argc, char **argv) {$/;"	f
+priority	todo.h	/^	int priority;$/;"	m	struct:__anon1
+sort	todo.c	/^void sort() {$/;"	f
+usage	todo.c	/^void usage(char **argv) {$/;"	f
+value	todo.h	/^	char *value;$/;"	m	struct:__anon1
