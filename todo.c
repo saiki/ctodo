@@ -28,47 +28,6 @@ int add(char const *value) {
 	return 0;
 }
 
-int delete(int line) {
-	FILE *fp;
-	FILE *tmp;
-	fp = fopen(get_path(), "r");
-	if (fp == NULL) {
-		printf("%s can not open.", get_path());
-		return -1;
-	}
-	tmp = tmpfile();
-	if (tmp == NULL) {
-		printf("tmp file can not open.");
-		if (fp != NULL) {
-			fclose(fp);
-		}
-		return -1;
-	}
-	int c = ' ';
-	int i = 1;
-	while ((c = fgetc(fp)) != EOF) {
-		if (c == '\n' || c == '\r') {
-			i++;
-		}
-		if (i != line) {
-			fputc(c, tmp);
-		}
-	}
-	fclose(fp);
-	fseek(tmp, 0, SEEK_SET);
-	fp = fopen(get_path(), "w");
-	if (fp == NULL) {
-		printf("%s can not open.", get_path());
-		return -1;
-	}
-	while ((c = fgetc(tmp)) != EOF) {
-		fputc(c, fp);
-	}
-	fclose(tmp);
-	free(path);
-	return 0;
-}
-
 int list(char *value) {
 	FILE *fp;
 	fp = fopen(get_path(), "r");
@@ -76,7 +35,7 @@ int list(char *value) {
 		printf("%s can not open.", get_path());
 		return -1;
 	}
-	int c;
+	int c = EOF;
 	int line = 1;
 	printf("%d\t", line++);
 	int putline = 0;
@@ -91,10 +50,6 @@ int list(char *value) {
 	fclose(fp);
 	free(path);
 	return 0;
-}
-
-void nice(int line, int nice) {
-
 }
 
 void usage(char **argv) {
@@ -144,3 +99,113 @@ Params *parse(int argc, char **argv) {
 	}
 	return params;
 }
+
+int delete(int line) {
+	FILE *fp;
+	FILE *tmp;
+	fp = fopen(get_path(), "r");
+	if (fp == NULL) {
+		printf("%s can not open.", get_path());
+		return -1;
+	}
+	tmp = tmpfile();
+	if (tmp == NULL) {
+		printf("tmp file can not open.");
+		if (fp != NULL) {
+			fclose(fp);
+		}
+		return -1;
+	}
+	int c = EOF;
+	int i = 1;
+	while ((c = fgetc(fp)) != EOF) {
+		if (c == '\n' || c == '\r') {
+			i++;
+		}
+		if (i != line) {
+			fputc(c, tmp);
+		}
+	}
+	fclose(fp);
+	fseek(tmp, 0, SEEK_SET);
+	fp = fopen(get_path(), "w");
+	if (fp == NULL) {
+		printf("%s can not open.", get_path());
+		return -1;
+	}
+	while ((c = fgetc(tmp)) != EOF) {
+		fputc(c, fp);
+	}
+	fclose(tmp);
+	free(path);
+	return 0;
+}
+
+int nice(int line, int nice) {
+	FILE *fp;
+	FILE *tmp;
+	fp = fopen(get_path(), "r");
+	if (fp == NULL) {
+		printf("%s can not open.", get_path());
+		return -1;
+	}
+	tmp = tmpfile();
+	if (tmp == NULL) {
+		printf("tmp file can not open.");
+		if (fp != NULL) {
+			fclose(fp);
+		}
+		return -1;
+	}
+	int c = EOF;
+	int i = 1;
+	char *value = (char *)calloc(2, sizeof(char));
+	char *vtmp;
+	while ((c = fgetc(fp)) != EOF) {
+		if (c == '\n' || c == '\r') {
+			i++;
+		}
+		if (i != line) {
+			fputc(c, tmp);
+		} else {
+			if (c != '\n' && c != '\r') {
+				vtmp = (char *)calloc(strlen(value) + 1, sizeof(char));
+				vtmp = strcpy(vtmp, value);
+				free(value);
+				value = (char *)calloc(strlen(vtmp) + 2, sizeof(char));
+				sprintf(value, "%s%c", vtmp, c);
+				free(vtmp);
+			}
+		}
+	}
+	fclose(fp);
+	fseek(tmp, 0, SEEK_SET);
+	fp = fopen(get_path(), "w");
+	if (fp == NULL) {
+		printf("%s can not open.", get_path());
+		return -1;
+	}
+	i = 1;
+	printf("%s\n", value);
+	if (i == nice) {
+		fprintf(fp, "%s\n", value);
+		i++;
+	}
+	while ((c = fgetc(tmp)) != EOF) {
+		if (c == '\n' || c == '\r') {
+			i++;
+			if (i == nice) {
+				fputc(c, fp);
+				fprintf(fp, "%s\n", value);
+				i++;
+				continue;
+			}
+		}
+		fputc(c, fp);
+	}
+	fclose(tmp);
+	free(path);
+	free(value);
+	return 0;
+}
+

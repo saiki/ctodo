@@ -22,7 +22,7 @@ int add(const char *);
 
 int delete(int);
 
-void nice(int, int);
+int nice(int, int);
 
 void usage(char **);
 
