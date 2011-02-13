@@ -20,7 +20,7 @@ char *get_path(void);
 
 int add(const char *);
 
-void delete(int);
+int delete(int);
 
 void nice(int, int);
 

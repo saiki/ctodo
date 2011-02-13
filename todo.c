@@ -4,10 +4,14 @@
 #include <string.h>
 #include "todo.h"
 
+static char *path;
+
 char *get_path() {
-	char *path;
-	path = (char *)malloc(sizeof(char) * (strlen(getenv("HOME")) + strlen("/todo.txt")));
-	path = strcat(getenv("HOME"), "/todo.txt");	
+	if (path == NULL) {
+		path = (char *)malloc(sizeof(char) * (strlen(getenv("HOME")) + strlen("/todo.txt")));
+		path = strcpy(path, getenv("HOME"));
+		path = strcat(path, "/todo.txt");	
+	}
 	return path;
 }
 
@@ -20,11 +24,49 @@ int add(char const *value) {
 	}
 	fprintf(fp, "%s\n", value);
 	fclose(fp);
+	free(path);
 	return 0;
 }
 
-void delete(int line) {
-
+int delete(int line) {
+	FILE *fp;
+	FILE *tmp;
+	fp = fopen(get_path(), "r");
+	if (fp == NULL) {
+		printf("%s can not open.", get_path());
+		return -1;
+	}
+	tmp = tmpfile();
+	if (tmp == NULL) {
+		printf("tmp file can not open.");
+		if (fp != NULL) {
+			fclose(fp);
+		}
+		return -1;
+	}
+	int c = ' ';
+	int i = 1;
+	while ((c = fgetc(fp)) != EOF) {
+		if (c == '\n' || c == '\r') {
+			i++;
+		}
+		if (i != line) {
+			fputc(c, tmp);
+		}
+	}
+	fclose(fp);
+	fseek(tmp, 0, SEEK_SET);
+	fp = fopen(get_path(), "w");
+	if (fp == NULL) {
+		printf("%s can not open.", get_path());
+		return -1;
+	}
+	while ((c = fgetc(tmp)) != EOF) {
+		fputc(c, fp);
+	}
+	fclose(tmp);
+	free(path);
+	return 0;
 }
 
 int list(char *value) {
@@ -47,6 +89,7 @@ int list(char *value) {
 		putline = (c == '\n' || c == '\n');
 	}
 	fclose(fp);
+	free(path);
 	return 0;
 }
 
@@ -64,15 +107,14 @@ void usage(char **argv) {
 
 Params *parse(int argc, char **argv) {
 	Params *params = (Params *)malloc(sizeof(Params));
+	params->value = (char *)malloc(sizeof(char));
 	int i = 0;
 	if (argc <= 1) {
-		printf("list");
 		params->command = LIST;
 		return params;
 	}
 	if (strcmp(*(argv+1), "add") == 0) {
 		params->command = ADD;
-		params->value = (char *)malloc(sizeof(char));
 		char *tmp;
 		for (i = 2; i < argc; i++) {
 			tmp = (char *)malloc(strlen(params->value));
@@ -87,13 +129,9 @@ Params *parse(int argc, char **argv) {
 			}
 			free(tmp);
 		}
-	} else if (strcmp(*(argv+1), "update") == 0) {
-		params->command = UPDATE;
-		params->value = *(argv+2);
 	} else if (strcmp(*(argv+1), "delete") == 0) {
 		params->command = DELETE;
 		params->line = atoi(*(argv+2));
-		params->nice = atoi(*(argv+3));
 	} else if (strcmp(*(argv+1), "list") == 0) {
 		params->command = LIST;
 		params->value = *(argv+2);

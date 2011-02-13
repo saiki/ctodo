@@ -15,14 +15,13 @@ UPDATE	todo.h	/^	UPDATE, $/;"	e	enum:COMMAND
 USAGE	todo.h	/^	USAGE$/;"	e	enum:COMMAND
 add	todo.c	/^int add(char const *value) {$/;"	f
 command	todo.h	/^	enum COMMAND command;$/;"	m	struct:__anon1	typeref:enum:__anon1::COMMAND
-delete	todo.c	/^void delete(int priority) {$/;"	f
+delete	todo.c	/^int delete(int line) {$/;"	f
 get_path	todo.c	/^char *get_path() {$/;"	f
+line	todo.h	/^	int line;$/;"	m	struct:__anon1
 list	todo.c	/^int list(char *value) {$/;"	f
 main	main.c	/^int main(int argc, char *argv[]) {$/;"	f
-nice	todo.c	/^void nice(int priority, int nice) {$/;"	f
+nice	todo.c	/^void nice(int line, int nice) {$/;"	f
 nice	todo.h	/^	int nice;$/;"	m	struct:__anon1
 parse	todo.c	/^Params *parse(int argc, char **argv) {$/;"	f
-priority	todo.h	/^	int priority;$/;"	m	struct:__anon1
-sort	todo.c	/^void sort() {$/;"	f
 usage	todo.c	/^void usage(char **argv) {$/;"	f
 value	todo.h	/^	char *value;$/;"	m	struct:__anon1
