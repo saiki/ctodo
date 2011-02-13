@@ -10,20 +10,20 @@ int main(int argc, char *argv[]) {
 	Params *params = parse(argc, argv);
 	switch (params->command) {
 		case ADD:
-			if ((params->priority = add(params->value)) != -1) {
-				printf("add priority %d\n", params->priority);
+			if (add(params->value) != -1) {
+				printf("added a task %s\n", params->value);
 			} else {
 				printf("error \"%s\" can not add.", params->value);
 			}
 			break;
 		case DELETE:
-			delete(params->priority);
+			delete(params->line);
 			break;
 		case LIST:
 			list(params->value);
 			break;
 		case NICE:
-			nice(params->priority, params->nice);
+			nice(params->line, params->nice);
 			break;
 		case USAGE:
 			usage(argv);

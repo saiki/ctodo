@@ -12,7 +12,7 @@ enum COMMAND {
 typedef struct {
 	enum COMMAND command;
 	char *value;
-	int priority;
+	int line;
 	int nice;
 } Params;
 
@@ -23,8 +23,6 @@ int add(const char *);
 void delete(int);
 
 void nice(int, int);
-
-void sort(void);
 
 void usage(char **);
 

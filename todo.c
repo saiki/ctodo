@@ -18,46 +18,13 @@ int add(char const *value) {
 		printf("%s can not open.", get_path());
 		return -1;
 	}
-	int priority = 0;
-	int current = 0;
-	int c;
-	char *line = (char *)malloc(sizeof(char) * 2);
-	char *tmp;
-	int n = 0;
-	printf("%d\t%d", '\r', '\n');
-	fseek(fp, 0, SEEK_SET);
-	while ((c = fgetc(fp)) != EOF) {
-		if (c != '\n' && c != '\r') {
-			tmp = (char *)calloc((strlen(line) + 1), sizeof(char));
-			tmp = strcpy(tmp, line);
-			free(line);
-			line = (char *)calloc((strlen(tmp) + 2), sizeof(char));
-			sprintf(line, "%s%c", tmp, c);
-			free(tmp);
-			continue;
-		} else {
-			printf("%d\t%c", c, c);
-		}
-		// if crlf skip
-		if (strlen(line) > 0) {
-			if ((n = sscanf(line, "%d\t%*s", &current)) == 1) {
-				priority = (priority > current) ? priority : current;
-			}
-			printf("line(n=%d, current=%d, priority=%d)=%s\n", n, current, priority, line);
-			free(line);
-			line = (char *)malloc(sizeof(char) * 2);
-		}
-	}
-	printf("priority = %d\n", priority);
-	printf("%s\n", value);
-	fprintf(fp, "%d\t%s\n", (priority + 1), value);
-	free(line);
+	fprintf(fp, "%s\n", value);
 	fclose(fp);
-	return priority + 1;
+	return 0;
 }
 
-void delete(int priority) {
-	
+void delete(int line) {
+
 }
 
 int list(char *value) {
@@ -68,22 +35,23 @@ int list(char *value) {
 		return -1;
 	}
 	int c;
+	int line = 1;
+	printf("%d\t", line++);
+	int putline = 0;
 	while ((c = fgetc(fp)) != EOF) {
+		if (putline != 0) {
+			printf("%d\t", line++);
+			putline = 0;
+		}
 		putchar(c);
+		putline = (c == '\n' || c == '\n');
 	}
 	fclose(fp);
 	return 0;
 }
 
-void nice(int priority, int nice) {
+void nice(int line, int nice) {
 
-}
-
-void sort() {
-	FILE *tmp = tmpfile();
-	FILE *fp = fopen(get_path(), "r");
-	fclose(tmp);
-	fclose(fp);
 }
 
 void usage(char **argv) {
@@ -124,14 +92,14 @@ Params *parse(int argc, char **argv) {
 		params->value = *(argv+2);
 	} else if (strcmp(*(argv+1), "delete") == 0) {
 		params->command = DELETE;
-		params->priority = atoi(*(argv+2));
+		params->line = atoi(*(argv+2));
 		params->nice = atoi(*(argv+3));
 	} else if (strcmp(*(argv+1), "list") == 0) {
 		params->command = LIST;
 		params->value = *(argv+2);
 	} else if (strcmp(*(argv+1), "nice") == 0) {
 		params->command = NICE;
-		params->priority = atoi(*(argv+2));
+		params->line = atoi(*(argv+2));
 		params->nice = atoi(*(argv+3));
 	} else {
 		params->command = USAGE;
