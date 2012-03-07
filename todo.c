@@ -64,6 +64,7 @@ Params *parse(int argc, char **argv) {
 	Params *params = (Params *)malloc(sizeof(Params));
 	params->value = (char *)malloc(sizeof(char));
 	int i = 0;
+	// command not specified.
 	if (argc <= 1) {
 		params->command = LIST;
 		return params;
@@ -72,14 +73,14 @@ Params *parse(int argc, char **argv) {
 		params->command = ADD;
 		char *tmp;
 		for (i = 2; i < argc; i++) {
-			tmp = (char *)malloc(strlen(params->value));
+			tmp = (char *)calloc(strlen(params->value) + 1, sizeof(char));
 			tmp = strcpy(tmp, params->value);
 			free(params->value);
 			if (strlen(tmp) > 0) {
-				params->value = (char *)calloc((strlen(tmp) + sizeof(char) + strlen(*(argv+i))), sizeof(char));
+				params->value = (char *)calloc((strlen(tmp) + 1 + strlen(*(argv+i))), sizeof(char));
 				sprintf(params->value, "%s %s", tmp, *(argv+i));
 			} else {
-				params->value = (char *)calloc(strlen(*(argv+i)), sizeof(char));
+				params->value = (char *)calloc(strlen(*(argv+i)) + 1, sizeof(char));
 				sprintf(params->value, "%s", *(argv+i));
 			}
 			free(tmp);
